@@ -32,7 +32,7 @@ export default function Home() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify([...messages, { role: 'user', content: message }], selectedLanguage),
+      body: JSON.stringify({ messages: [...messages, { role: 'user', content: message }], language: selectedLanguage }),
     });
 
     const reader = response.body.getReader();

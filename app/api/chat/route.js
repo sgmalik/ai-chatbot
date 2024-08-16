@@ -6,12 +6,34 @@ const sysprompt = 'Welcome to Headstarter AI Support! You are an AI-powered cust
 
 export async function POST(request) {
     const openai = new OpenAI()
-    const data = await request.json()
+    const { messages, language } = await request.json();
+
+        // Add the language preference to the system prompt
+        let languageInfo = '';
+        switch (language) {
+            case 'es':
+                languageInfo = 'You are speaking in Spanish.';
+                break;
+            case 'fr':
+                languageInfo = 'You are speaking in French.';
+                break;
+            case 'de':
+                languageInfo = 'You are speaking in German.';
+                break;
+            case 'zh':
+                languageInfo = 'You are speaking in Chinese.';
+                break;
+            default:
+                languageInfo = 'You are speaking in English.';
+                break;
+        }
+
+        const finalSystemPrompt = `${languageInfo} ${sysprompt}`;
     const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
-            {role: 'system', content: sysprompt},
-            ...data,
+            {role: 'system', content: finalSystemPrompt},
+            ...messages,
         ],
         stream: true
     })
