@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { Box, Stack, TextField, Button, FormControl, Select, MenuItem } from "@mui/material";
+import { Box, Stack, TextField, Button, FormControl, Select, MenuItem, Typography } from "@mui/material";
 
 export default function Home() {
   const [messages, setMessages] = useState([{
@@ -64,52 +64,54 @@ export default function Home() {
 
   return (
     <Box 
-      width="100vw" 
-      height="100vh" 
-      display="flex" 
-      flexDirection="column" 
-      justifyContent="center" 
-      alignItems="center"
+      sx={{
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '20px',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        backgroundColor: '#f9f9f9',
+        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+        fontFamily: 'Arial, sans-serif',
+      }}
     >
-      <Stack 
-        direction="column" 
-        width="600px" 
-        height="700px" 
-        border="1px solid black" 
-        p={2} 
-        spacing={2}
+      <Box sx={{ border: '1px solid black', padding: '10px', backgroundColor: '#007bff', color: 'white', textAlign: 'center', borderRadius: '10px 10px 0 0' }}>
+        <Typography variant="h6">Resume Bot</Typography>
+      </Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+          padding: '20px',
+          overflowY: 'auto',
+          backgroundColor: '#fff',
+          border: '1px solid black',
+        }}
       >
         {/* Message Stack with scrollbar fix */}
         <Stack 
-          direction="column" 
           spacing={2} 
-          flexGrow={1} 
-          sx={{
-            overflowY: "auto",
-            overflowX: "hidden",
-            maxHeight: "100%",
-            pr: 1,
-            boxSizing: "border-box",
-          }}
         >
           {messages.map((message, index) => (
             <Box 
               key={index} 
-              display="flex" 
-              justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}
-              width="100%"
+              sx={{
+                display: 'flex',
+                justifyContent: message.role === 'assistant' ? 'flex-start' : 'flex-end',
+              }}
             >
               <Box 
-                bgcolor={message.role === 'assistant' ? 'primary.main' : 'secondary.main'} 
-                color="white" 
-                borderRadius={16} 
-                p={3}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
                 sx={{
-                  maxWidth: "75%",
-                  wordWrap: "break-word",
+                  padding: '10px 15px',
+                  borderRadius: '18px',
+                  backgroundColor: message.role === 'assistant' ? '#007bff' : '#5c16c5',
+                  color: 'white',
+                  maxWidth: '70%',
+                  wordWrap: 'break-word',
+                  animation: 'fadeIn 0.3s ease-in-out',
+                  boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.15)',
                 }}
               >
                 {message.content}
@@ -117,41 +119,63 @@ export default function Home() {
             </Box>
           ))}
         </Stack>
+      </Box>
 
-        {/* Input area */}
-        <Stack
-          direction="row"
-          spacing={2}
-        >
-          <TextField
-            label="Message"
-            fullWidth
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}  // Add event listener for keydown
-          />
-          <Button
-            variant="contained"
-            onClick={sendMessage}  // Use sendMessage function on click
+      {/* Input area */}
+      <Box
+        sx={{
+          padding: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          borderTop: '1px solid #e0e0e0',
+          backgroundColor: '#f9f9f9',
+          border: '1px solid black',
+        }}
+      >
+        <TextField
+          variant="outlined"
+          placeholder="Type your message..."
+          fullWidth
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          sx={{
+            backgroundColor: '#fff',
+            borderRadius: '20px',
+            marginRight: '10px',
+          }}
+        />
+        <FormControl variant="outlined" sx={{ minWidth: 80, marginRight: '10px' }}>
+          <Select
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+            sx={{
+              borderRadius: '20px',
+              backgroundColor: '#fff',
+            }}
           >
-            Send Message
-          </Button>
-          <FormControl sx={{ minWidth: 100 }}>
-            <Select
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-              displayEmpty
-            >
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="es">Spanish</MenuItem>
-              <MenuItem value="fr">French</MenuItem>
-              <MenuItem value="de">German</MenuItem>
-              <MenuItem value="zh">Chinese</MenuItem>
-              {/* Add more languages here */}
-            </Select>
-          </FormControl>
-        </Stack>
-      </Stack>
+            <MenuItem value="en">EN</MenuItem>
+            <MenuItem value="es">ES</MenuItem>
+            <MenuItem value="fr">FR</MenuItem>
+            <MenuItem value="de">DE</MenuItem>
+            <MenuItem value="zh">ZH</MenuItem>
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          onClick={sendMessage}
+          sx={{
+            padding: '10px 20px',
+            borderRadius: '20px',
+            backgroundColor: '#007bff',
+            '&:hover': {
+              backgroundColor: '#0056b3',
+            },
+          }}
+        >
+        Send
+        </Button>
+      </Box>
     </Box>
   );
 }
