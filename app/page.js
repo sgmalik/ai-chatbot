@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { Box, Stack, TextField, Button } from "@mui/material";
+import { Box, Stack, TextField, Button, FormControl, Select, MenuItem } from "@mui/material";
 
 export default function Home() {
   const [messages, setMessages] = useState([{
@@ -10,21 +10,29 @@ export default function Home() {
   }]);
 
   const [message, setMessage] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+
+  const handleLanguageChange = (event) => {
+    setSelectedLanguage(event.target.value);
+  };
 
   const sendMessage = async () => {
-    setMessage('');
+    if (!message.trim()) return;  // Prevent sending empty messages
+
     setMessages((messages) => [
       ...messages,
       { role: 'user', content: message },
       { role: 'assistant', content: '' }
     ]);
 
+    setMessage('');
+
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify([...messages, { role: 'user', content: message }]),
+      body: JSON.stringify([...messages, { role: 'user', content: message }], selectedLanguage),
     });
 
     const reader = response.body.getReader();
@@ -47,6 +55,13 @@ export default function Home() {
     });
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();  // Prevent default Enter behavior
+      sendMessage();  // Trigger the sendMessage function when Enter is pressed
+    }
+  };
+
   return (
     <Box 
       width="100vw" 
@@ -64,18 +79,25 @@ export default function Home() {
         p={2} 
         spacing={2}
       >
+        {/* Message Stack with scrollbar fix */}
         <Stack 
           direction="column" 
           spacing={2} 
           flexGrow={1} 
-          overflow="auto" 
-          maxHeight="100%"
+          sx={{
+            overflowY: "auto",
+            overflowX: "hidden",
+            maxHeight: "100%",
+            pr: 1,
+            boxSizing: "border-box",
+          }}
         >
           {messages.map((message, index) => (
             <Box 
               key={index} 
               display="flex" 
               justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}
+              width="100%"
             >
               <Box 
                 bgcolor={message.role === 'assistant' ? 'primary.main' : 'secondary.main'} 
@@ -85,12 +107,18 @@ export default function Home() {
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
+                sx={{
+                  maxWidth: "75%",
+                  wordWrap: "break-word",
+                }}
               >
                 {message.content}
               </Box>
             </Box>
           ))}
         </Stack>
+
+        {/* Input area */}
         <Stack
           direction="row"
           spacing={2}
@@ -100,6 +128,7 @@ export default function Home() {
             fullWidth
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}  // Add event listener for keydown
           />
           <Button
             variant="contained"
@@ -107,6 +136,20 @@ export default function Home() {
           >
             Send Message
           </Button>
+          <FormControl sx={{ minWidth: 100 }}>
+            <Select
+              value={selectedLanguage}
+              onChange={handleLanguageChange}
+              displayEmpty
+            >
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="es">Spanish</MenuItem>
+              <MenuItem value="fr">French</MenuItem>
+              <MenuItem value="de">German</MenuItem>
+              <MenuItem value="zh">Chinese</MenuItem>
+              {/* Add more languages here */}
+            </Select>
+          </FormControl>
         </Stack>
       </Stack>
     </Box>
