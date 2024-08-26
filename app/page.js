@@ -4,16 +4,39 @@ import { useState } from "react";
 import { Box, Stack, TextField, Button, FormControl, Select, MenuItem, Typography } from "@mui/material";
 
 export default function Home() {
+
+  const translations = {
+    en: "Hi! I'm Surya's resume bot. How can I help you today?",
+    es: "¡Hola! Soy el bot de currículum de Surya. ¿Cómo puedo ayudarte hoy?",
+    fr: "Salut! Je suis le bot de CV de Surya. Comment puis-je vous aider aujourd'hui?",
+    de: "Hallo! Ich bin Surya's Lebenslauf-Bot. Wie kann ich Ihnen heute helfen?",
+    zh: "你好！我是苏瑞亚的简历机器人。我今天能帮您什么？",
+  };
+
+  const [selectedLanguage, setSelectedLanguage] = useState("en"); // default language is English
+
   const [messages, setMessages] = useState([{
     role: "assistant",
-    content: "Hi! I'm Headstarter AI Support. How can I help you today?",
+    content: translations[selectedLanguage],
   }]);
 
   const [message, setMessage] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
 
   const handleLanguageChange = (event) => {
-    setSelectedLanguage(event.target.value);
+    const newLanguage = event.target.value;
+    setSelectedLanguage(newLanguage);
+
+    // Update the initial assistant message to the selected language translation
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages];
+      
+      // Assuming the initial assistant message is always the first one
+      if (updatedMessages.length > 0 && updatedMessages[0].role === "assistant") {
+        updatedMessages[0] = { ...updatedMessages[0], content: translations[newLanguage] };
+      }
+      
+      return updatedMessages;
+    });
   };
 
   const sendMessage = async () => {
